@@ -1,0 +1,383 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="~/Scripts/knockout-3.5.1.debug.js"></script>
+</head>
+
+<body>
+
+
+    <div style="margin-top:70px">
+        <div class="page-header">
+                <h3 class="page-title col-12" style="font-size: 1.2em">
+                    <span class="page-title-icon bg-gradient-primary text-white mr-2">
+                        <i class="mdi mdi-bank"></i>
+                    </span>
+                    教师信息管理
+                </h3>
+            </div>
+    <label><input type="text"  placeholder="教师姓名" class="form-control" id="TeacherNameSearch" class="form-control" data-bind="value:TeacherNameSearch" /></label>
+    <label>性别:<input type="radio" name="sex" value="男" data-bind="checked:sex" />男<input type="radio" name="sex" value="女" data-bind="checked:sex" />女</label>
+    <label>
+        <button id="Search" data-bind="click:Search" class="btn btn-info" style="background-color: #62a6e9">查询</button></label>
+    <label>
+        <button id="Add" data-bind="click:Add" class="btn btn-info" style="background-color: #62a6e9">添加</button></label>
+    <button data-bind="click: remove" class="btn btn-info" style="background-color: #62a6e9">删除</button>
+    <button id="BatchAdd" data-bind="click:BatchAdd" class="btn btn-info" style="background-color: #62a6e9">批量导入</button>
+    <a style="color:#000" href="@Url.Action("daochu", "Teacher")">
+        <button type="button" class="btn btn-info" style="background-color: #62a6e9">
+            <span  aria-hidden="true"></span>导出教师信息
+        </button>
+    </a>
+        </div>
+    <table id="theader" class="table table-hover" style="width: 100%">
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" id="allcheck" class="checkbox" onclick="demo()" /></th>
+                <th style="text-align: center;">序号</th>
+                <th style="text-align: center;">教工号</th>
+                <th style="text-align: center;">教师姓名</th>
+                <th style="text-align: center;">教师性别</th>
+                <th style="text-align: center;">身份证号</th>
+                <th style="text-align: center;">操作</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: people">
+            <tr>
+                <td>
+                    <input type="checkbox" name="choice" data-bind="value:TeacherID" class="checkbox" onclick="setAll()" /></td>
+                <td style="text-align: center;" data-bind="text: TeacherID"></td>
+                <td style="text-align: center;" data-bind="text: TeacherID"></td>
+                <td style="text-align: center;" data-bind="text: TeacherName"></td>
+                <td style="text-align: center;" data-bind="text: TeacherSex"></td>
+                <td style="text-align: center;" data-bind="text: TeacherCode"></td>
+                <td style="text-align: center;"><button id="btn_edit" type="button" data-bind="value:TeacherID,click:$parent.Detail">编辑</button></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="row" style="text-align: center; margin-right: 70px;">
+        <div class="col-md-12  col-xs-12">
+            <div id="fybtn">
+                <input type="text" id="page" value="1" name="page" hidden="hidden" />
+                <input type="text" id="pageNumber" value="1" name="page" hidden="hidden" />
+                <input type="text" id="pageNumx" value="1" name="page" hidden="hidden" />
+                <button type="button" style="border: 0; background: none" data-bind="click:btnf" id="btnf">首页</button>
+                <button type="button" style="border: 0; background: none" data-bind="click:btns" id="btns">上一页</button>
+                <button type="button" style="border: 0; background: none" data-bind="click:btnx" id="btnx">下一页</button>
+                <button type="button" style="border: 0; background: none" data-bind="click:btne" id="btne">尾页</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">操作</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="txt_Name">教师姓名</label>
+                        <input type="text" data-bind="value:details" class="form-control" id="txt_Name">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btn_submit" class="btn btn-primary" data-bind="click:Save">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModalAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabelAdd">操作</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="txt_NameAdd">教工号</label>
+                        <input type="text" data-bind="value:TeacherIDAdd" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="txt_NameAdd">教师姓名</label>
+                        <input type="text" data-bind="value:TeacherNameAdd" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="txt_NameAdd">教师性别</label>
+                        <label class="form-control" style="border: none">
+                            <input type="radio" name="sex" value="男" data-bind="checked:sexAdd" />男<input type="radio" name="sex" value="女" data-bind="checked:sexAdd" />女</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="txt_NameAdd">身份证号</label>
+                        <input type="text" data-bind="value:TeacherCodeAdd" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btn_submitAdd" class="btn btn-primary" data-bind="click:SaveAdd">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框（Modal） -->
+    @*    @using (Html.BeginForm("BatchAdd", "Index", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        *@<div class="modal fade" id="myBatchAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel1">导入教师数据</h4>
+                    </div>
+                    <div class="modal-body">
+                        模板下载:<a href="~/Files/模板3.xlsx">下载</a>
+                    </div>
+                    <div class="modal-body">
+                        <input name="file" type="file" data-bind="change:filechange" id="file" style="float: left" />
+                    </div>
+                    <div class="modal-body">
+                        <table id="DataList" class="table table-hover datatable">
+                            <thead>
+                                <tr>
+                                    <th>教工号</th>
+                                    <th>教师姓名</th>
+                                    <th>教师性别</th>
+                                    <th>身份证号</th>
+                                </tr>
+
+                            </thead>
+                            <tbody data-bind="foreach: people1">
+                                <tr>
+                                    <td data-bind="text: TeacherID1"></td>
+                                    <td data-bind="text: TeacherName1"></td>
+                                    <td data-bind="text: TeacherSex1"></td>
+                                    <td data-bind="text: TeacherCode1"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" data-bind="click:SaveBatchAdd">批量导入</button>
+                    </div>
+
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal -->
+        </div>
+    @*    }*@
+
+    <script type="text/javascript">
+        var dataarr = [];
+        var DetailID = 0;
+        $("#DataList").hide();
+        var pageNumber;
+        var pageNumx;
+        function Search() {
+            $.get('@Url.Action("Index1", "Teacher")', { Name: viewModel.TeacherNameSearch, Sex: viewModel.sex, page: $("#page").val() },
+               function (data) {
+                   dataarr = data.aa;
+                   $('#pageNumber').val(data.pageNumber);
+                   $('#pageNumx').val(data.pageNumx);
+                   viewModel.people(dataarr);
+
+               })
+        }
+        $('#pageNumber').val(@Html.Raw(Model.pageNumber));
+        $('#pageNumx').val(@Html.Raw(Model.pageNumx));
+
+
+        var viewModel = {
+            people: ko.observableArray(@Html.Raw(Model.aa1)),
+            people1: ko.observableArray(""),
+            TeacherNameSearch: ko.observable(""),
+            sex: ko.observable(""),
+            TeacherIDAdd: ko.observable(""),
+            TeacherNameAdd: ko.observable(""),
+            sexAdd: ko.observable(""),
+            TeacherCodeAdd: ko.observable(""),
+            file: ko.observable(""),
+            BatchAdd: ko.observable(""),
+            SaveBatchAdd: ko.observable(""),
+            Search: function () {
+                $('#page').val("1");
+                Search();
+
+            },
+            remove: function () {
+                var arr1 = [];
+                var a = document.getElementsByName('choice');
+                for (var i = 0; i < a.length; i++) {
+                    if (a[i].checked == true) {
+                        arr1.push(a[i].value);
+                    }
+                }
+                if (arr1.length != 0) {
+                    $.get('@Url.Action("DeleteList", "Teacher")',
+                    "arr=" + arr1,
+                    function (data) {
+                        alert(data);
+                        document.getElementById("allcheck").checked = false;
+                        $('#page').val("1");
+                        Search();
+                    }
+                )
+                }
+            },
+            Detail: function () {
+                $('#myModal').modal('show');
+                DetailID = this.TeacherID;
+                $.get('@Url.Action("IndexDetail", "Teacher")', { ID: DetailID },
+              function (data) {
+                  viewModel.details(data[0].TeacherName);
+              });
+            },
+            Save: function () {
+                var DetailName = $('#txt_Name').val()
+                $.get('@Url.Action("IndexDetailSave", "Teacher")', { id: DetailID, DetailName: DetailName },
+              function (data) {
+                  $('#myModal').modal('hide');
+                  console.log(data);
+                  alert("修改成功");
+                  $('#page').val("1");
+                  Search();
+              });
+            },
+            details: ko.observable(""),
+            Add: function () {
+                $('#myModalAdd').modal('show');
+            },
+            SaveAdd: function () {
+                $.get('@Url.Action("IndexAddSave", "Teacher")', { TeacherID: viewModel.TeacherIDAdd, TeacherName: viewModel.TeacherNameAdd, TeacherSex: viewModel.sexAdd, TeacherCode: viewModel.TeacherCodeAdd },
+              function (data) {
+                  $('#myModalAdd').modal('hide');
+                  alert("添加成功");
+                  $('#page').val("1");
+                  Search();
+              });
+            },
+            btnf: function () {
+                $('#page').val("1");
+                Search();
+
+            },
+            btns: function () {
+                $('#page').val($("#pageNumber").val() <= 1 ? $("#pageNumber").val() : $("#pageNumber").val() * 1 - 1);
+                Search()
+            },
+            btnx: function () {
+                $('#page').val($("#pageNumber").val() >= $("#pageNumx").val() ? $("#pageNumber").val() : $("#pageNumber").val() * 1 + 1);
+                Search()
+            },
+            btne: function () {
+                $('#page').val($("#pageNumx").val());
+                Search()
+            },
+            BatchAdd: function () {
+                $('#myBatchAdd').modal('show');
+            },
+            SaveBatchAdd: function () {
+                var fd = new FormData();
+                fd.append("file", $('#file')[0].files[0]);
+                $.ajax({
+                    url: '@Url.Action("BatchAdd", "Teacher")',
+                    type: "POST",
+                    data: fd,
+                    datatype: 'json',
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        console.log(data);
+                        if (data == "导入成功") {
+                            alert(data);
+                            $('#myBatchAdd').modal('hide');
+                            $('#page').val("1");
+                            Search();
+                        }
+                        else {
+                            alert(data);
+                        }
+                    }
+
+                })
+            },
+
+            filechange: document.getElementById("file").addEventListener("change", function () {
+                var fd = new FormData();
+                fd.append("file", $('#file')[0].files[0]);
+                $.ajax({
+                    url: '@Url.Action("BatchAdd2", "Teacher")',
+                    type: "POST",
+                    data: fd,
+                    datatype: 'json',
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        console.table(data);
+                        if (data != "导入失败") {
+                            $("#DataList").show();
+                            dataarr1 = JSON.parse(data);
+                            console.table(dataarr1);
+                            viewModel.people1(dataarr1);
+                        }
+                        else {
+                            alert("预览失败");
+                        }
+                    }
+
+                })
+            }),
+            daochu: function () {
+                $.get('@Url.Action("daochu", "Teacher")', {},
+              function (data) {
+                  location = "/Teacher/Index";
+              });
+            },
+
+        };
+        ko.applyBindings(viewModel);
+
+
+
+        function demo() {
+            var allcheck = document.getElementById("allcheck");
+            var choice = document.getElementsByName("choice");
+            for (var i = 0; i < choice.length; i++) {
+                choice[i].checked = allcheck.checked;
+            }
+        }
+
+        //点击子复选框,全选框 选中、取消
+        function setAll() {
+            if (!$(".checkbox").checked) {
+                $("#allcheck").prop("checked", false); // 子复选框某个不选择，全选也被取消
+            }
+            var choicelength = $("input[type='checkbox'][class='checkbox']").length;
+            var choiceselect = $("input[type='checkbox'][class='checkbox']:checked").length;
+
+            if (choicelength == choiceselect + 1) {
+                $("#allcheck").prop("checked", true);   // 子复选框全部部被选择，全选也被选择；1.对于HTML元素我们自己自定义的DOM属性，在处理时，使用attr方法；2.对于HTML元素本身就带有的固有属性，在处理时，使用prop方法。
+            }
+        }
+    </script>
+
+</body>
+</html>

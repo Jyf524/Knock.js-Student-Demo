@@ -1,0 +1,394 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<body>
+
+
+    <div style="margin-top: 70px">
+        <div class="page-header">
+            <h3 class="page-title col-12" style="font-size: 1.2em">
+                <span class="page-title-icon bg-gradient-primary text-white mr-2">
+                    <i class="mdi mdi-bank"></i>
+                </span>
+                成绩信息管理
+            </h3>
+        </div>
+
+        <div class="row" style="line-height: 34px; margin-top: 20px;">
+            <div class="col-md-1  col-xs-5" style="font-size: 16px; margin-left: 0.5%; text-align: center">
+                班级:
+            </div>
+            <div class="col-md-2  col-xs-5" style="font-size: 16px;">
+                <select class="form-control" data-bind="options: StuClassSearch,value:StuClassSearch1"></select>
+               @* <input type="text" placeholder="无班级信息" class="form-control" id="StuClassSearch" data-bind="value:StuClassSearch" />*@
+            </div>
+            <div class="col-md-1  col-xs-5" style="font-size: 16px; text-align: center">
+                课程:
+            </div>
+            <div class="col-md-2  col-xs-5" style="font-size: 16px;">
+                <select class="form-control" data-bind="options: CourseNameSearch,value:CourseNameSearch1"></select>
+                @*<input type="text" placeholder="无课程信息" class="form-control" id="CourseNameSearch" data-bind="value:CourseNameSearch" />*@
+            </div>
+            <div class="col-md-2  col-xs-2">
+                <button id="Search" data-bind="click:Search" class="btn btn-info" style="background-color: #62a6e9">查询</button>
+                <button id="Save" data-bind="click:Save" class="btn btn-info" style="background-color: #62a6e9">暂存</button>
+                <button id="Saveok" data-bind="click:Saveok" class="btn btn-info" style="background-color: #62a6e9">提交</button>
+                <button id="BatchAdd" data-bind="click:BatchAdd" class="btn btn-info" style="background-color: #62a6e9">成绩导入</button>
+            </div>
+        </div>
+
+    </div>
+    <table id="theader" class="table table-hover" style="width: 100%">
+        <thead>
+            <tr>
+                <th style="text-align: center;">序号</th>
+                <th style="text-align: center;">姓名</th>
+                <th style="text-align: center;">课程</th>
+                <th style="text-align: center;">身份证号</th>
+                <th style="text-align: center; width: 200px;">平时成绩(30%)</th>
+                <th style="text-align: center; width: 200px;">期中成绩(30%)</th>
+                <th style="text-align: center; width: 200px;">期末成绩(40%)</th>
+                <th style="text-align: center; width: 250px;">缺勤课时数(本学期总课时数:<span style="color: #ff0000">80</span>)</th>
+                <th style="text-align: center;">总评</th>
+            </tr>
+        </thead>
+        <tbody id="box" data-bind="foreach: people">
+            <tr data-bind="value: ScoreID">
+                <td style="text-align: center;" data-bind="text: ScoreID"></td>
+                <td style="text-align: center;" data-bind="text: ScoreName"></td>
+                <td style="text-align: center;" data-bind="text: CourseName"></td>
+                <td style="text-align: center;" data-bind="text: StuIDCard"></td>
+
+
+                <td style="text-align: center;">
+                    <div data-bind="if: State">
+                      <span data-bind="text: UsualScore"></span>
+                    </div>
+                   
+                    <div data-bind="ifnot: State">
+                         <input type="text" class="form-control" name="ScoreID"  id="ScoreID" data-bind="value:ScoreID" style="display:none" hidden="hidden" />
+                        <input type="text" class="form-control" name="UsualScore"  id="UsualScore" data-bind="value:UsualScore" />
+                    </div>
+                </td>
+
+                 <td style="text-align: center;">
+                    <div data-bind="if: State">
+                      <span data-bind="text: MidtermScore"></span>
+                    </div>
+                    <div data-bind="ifnot: State">
+                        <input type="text" class="form-control" name="MidtermScore"  id="MidtermScore" data-bind="value:MidtermScore" />
+                    </div>
+                </td>
+
+                <td style="text-align: center;">
+                    <div data-bind="if: State">
+                      <span data-bind="text: EndScore"></span>
+                    </div>
+                    <div data-bind="ifnot: State">
+                        <input type="text" class="form-control" name="EndScore" id="EndScore" data-bind="value:EndScore" />
+                    </div>
+                </td>
+
+               <td style="text-align: center;">
+                    <div data-bind="if: State">
+                      <span data-bind="text: Absence"></span>
+                    </div>
+                    <div data-bind="ifnot: State">
+                        <input type="text" class="form-control" name="Absence" id="Absence" data-bind="value:Absence" />
+                    </div>
+                </td>
+
+              
+                <td style="text-align: center;">
+                       <span id="TotalScore" data-bind="text:TotalScore" style="color: #ff0000"></span>
+                </td>
+
+            </tr>
+        </tbody>
+    </table>
+    <div class="row" style="text-align: center; margin-right: 70px;">
+        <div class="col-md-12  col-xs-12">
+            <div id="fybtn">
+                <input type="text" id="page" value="1" name="page" hidden="hidden" />
+                <input type="text" id="pageNumber" value="1" name="page" hidden="hidden" />
+                <input type="text" id="pageNumx" value="1" name="page" hidden="hidden" />
+                <button type="button" style="border: 0; background: none" data-bind="click:btnf" id="btnf">首页</button>
+                <button type="button" style="border: 0; background: none" data-bind="click:btns" id="btns">上一页</button>
+                <button type="button" style="border: 0; background: none" data-bind="click:btnx" id="btnx">下一页</button>
+                <button type="button" style="border: 0; background: none" data-bind="click:btne" id="btne">尾页</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myBatchAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel1">导入成绩数据</h4>
+                    </div>
+                    <div class="modal-body">
+                        模板下载:<a href="~/Files/ScoreInfo模板.xlsx">下载</a>
+                    </div>
+                    <div class="modal-body">
+                        <input name="file" type="file" data-bind="change:filechange" id="file" style="float: left" />
+                    </div>
+                    <div class="modal-body">
+                      <table id="DataList" class="table table-hover datatable">
+                            <thead>
+                                <tr>
+                                    <th>编号</th>
+                                    <th>姓名</th>
+                                    <th>课程名</th>
+                                    <th>总分</th>
+                                </tr>
+
+                            </thead>
+                            <tbody data-bind="foreach: people1">
+                                <tr>
+                                    <td data-bind="text: ScoreID1"></td>
+                                    <td data-bind="text: ScoreName1"></td>
+                                    <td data-bind="text: CourseName1"></td>
+                                    <td data-bind="text: TotalScore1"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" data-bind="click:SaveBatchAdd">批量导入</button>
+                    </div>
+
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal -->
+        </div>
+
+    <script type="text/javascript">
+        var dataarr = [];
+        var dataarr2 = [];
+        var dataarr3 = [];
+        var DetailID = 0;
+        var dataarr1 = [];
+        $("#DataList").hide();
+        var pageNumber;
+        var pageNumx;
+        function Search() {
+            $.get('@Url.Action("Index1", "Score")', { Name: viewModel.StuClassSearch1, CourseName: viewModel.CourseNameSearch1, page: $("#page").val() },
+               function (data) {
+                   if (data == "请先登录") {
+                       alert(data);
+                   }
+                   else {
+                       dataarr = data.aa;
+                       $('#pageNumber').val(data.pageNumber);
+                       $('#pageNumx').val(data.pageNumx);
+                       viewModel.people(dataarr);
+                   }
+               })
+        }
+        $(function ClassInfo() {
+            $.get('@Url.Action("ClassInfo", "Score")', {},
+                              function (data) {
+                                  for (i = 0; i < data.aa.length; i++) {
+                                      if (i == 0) {
+                                          dataarr2.push(data.aa[i].ClassName);
+                                      }
+                                      else {
+                                          dataarr2.push(data.aa[i].ClassName);
+                                      }
+                                      viewModel.StuClassSearch(dataarr2);
+                                  }
+
+                              });
+            }),
+
+         $(function CourseInfo() {
+             $.get('@Url.Action("CourseInfo", "Score")', {},
+                           function (data) {
+                               for (i = 0; i < data.aa.length; i++) {
+                                   if (i == 0) {
+                                       dataarr3.push(data.aa[i].CourseName);
+                                   }
+                                   else {
+                                       dataarr3.push(data.aa[i].CourseName);
+                                   }
+                                   viewModel.CourseNameSearch(dataarr3);
+                               }
+
+                           });
+         }),
+
+        $('#pageNumber').val(@Html.Raw(Model.pageNumber));
+        $('#pageNumx').val(@Html.Raw(Model.pageNumx));
+
+        var viewModel = {
+            
+            people: ko.observableArray(@Html.Raw(Model.aa1)),
+            people1: ko.observableArray(""),
+            StuClassSearch: ko.observable(dataarr2),
+            CourseNameSearch: ko.observable(dataarr3),
+
+            StuClassSearch1: ko.observable(""),
+            CourseNameSearch1: ko.observable(""),
+
+            ScoreID: ko.observable(""),
+            ScoreName: ko.observable(""),
+            CourseName: ko.observable(""),
+            ScoreUserID: ko.observable(""),
+            StuIDCardAdd: ko.observable(""),
+            StuClassAdd: ko.observable(""),
+
+            UsualScore: ko.observable(""),
+            MidtermScore: ko.observable(""),
+            EndScore: ko.observable(""),
+            Absence: ko.observable(""),
+            TotalScore: ko.observable(""),
+
+            file: ko.observable(""),
+            BatchAdd: ko.observable(""),
+            SaveBatchAdd: ko.observable(""),
+            Search: function () {
+                $('#page').val("1");
+                Search();
+
+            },
+            btnf: function () {
+                $('#page').val("1");
+                Search();
+
+            },
+            btns: function () {
+                $('#page').val($("#pageNumber").val() <= 1 ? $("#pageNumber").val() : $("#pageNumber").val() * 1 - 1);
+                Search()
+            },
+            btnx: function () {
+                $('#page').val($("#pageNumber").val() >= $("#pageNumx").val() ? $("#pageNumber").val() : $("#pageNumber").val() * 1 + 1);
+                Search()
+            },
+            btne: function () {
+                $('#page').val($("#pageNumx").val());
+                Search()
+            },
+            BatchAdd: function () {
+                $('#myBatchAdd').modal('show');
+            },
+            Save: function () {
+
+                var arrID = [];
+                var ScoreIDVal = document.getElementsByName('ScoreID')
+                var arr = [];
+                var UsualScoreVal = document.getElementsByName('UsualScore')
+                var arr1 = [];
+                var MidtermScoreVal = document.getElementsByName('MidtermScore')
+                var arr2 = [];
+                var EndScoreVal = document.getElementsByName('EndScore')
+                var arr3 = [];
+                var AbsenceVal = document.getElementsByName('Absence')
+                for (var i = 0; i < ScoreIDVal.length ; i++) {
+                    arrID.push(ScoreIDVal[i].value);
+                    arr.push(UsualScoreVal[i].value);
+                    arr1.push(MidtermScoreVal[i].value);
+                    arr2.push(EndScoreVal[i].value);
+                    arr3.push(AbsenceVal[i].value);
+                }
+
+                if (arr1.length != 0) {
+                    $.get('@Url.Action("SaveList", "Score")', { arrID: arrID.toString(), arr: arr.toString(), arr1: arr1.toString(), arr2: arr2.toString(), arr3: arr3.toString(), },
+                     function (data) {
+                         alert(data);
+                         $('#page').val("1");
+                         Search();
+                     }
+             )
+                }
+                
+            },
+            Saveok: function () {
+                var arrID = [];
+                var ScoreIDVal = document.getElementsByName('ScoreID')
+                var arr = [];
+                var UsualScoreVal = document.getElementsByName('UsualScore')
+                var arr1 = [];
+                var MidtermScoreVal = document.getElementsByName('MidtermScore')
+                var arr2 = [];
+                var EndScoreVal = document.getElementsByName('EndScore')
+                var arr3 = [];
+                var AbsenceVal = document.getElementsByName('Absence')
+                for (var i = 0; i < ScoreIDVal.length ; i++) {
+                    arrID.push(ScoreIDVal[i].value);
+                    arr.push(UsualScoreVal[i].value);
+                    arr1.push(MidtermScoreVal[i].value);
+                    arr2.push(EndScoreVal[i].value);
+                    arr3.push(AbsenceVal[i].value);
+                }
+
+                if (arr1.length != 0) {
+                    $.get('@Url.Action("SaveList1", "Score")', { arrID: arrID.toString(), arr: arr.toString(), arr1: arr1.toString(), arr2: arr2.toString(), arr3: arr3.toString(), },
+                     function (data) {
+                         alert(data);
+                         $('#page').val("1");
+                         Search();
+                     })
+                }
+            },
+            BatchAdd: function () {
+                $('#myBatchAdd').modal('show');
+            },
+            SaveBatchAdd: function () {
+                var fd = new FormData();
+                fd.append("file", $('#file')[0].files[0]);
+                $.ajax({
+                    url: '@Url.Action("BatchAdd", "Score")',
+                    type: "POST",
+                    data: fd,
+                    datatype: 'json',
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data == "导入成功") {
+                            alert(data);
+                            $('#myBatchAdd').modal('hide');
+                            $('#page').val("1");
+                            Search();
+                        }
+                        else {
+                            alert(data);
+                        }
+                    }
+
+                })
+            },
+
+            filechange: document.getElementById("file").addEventListener("change", function () {
+                var fd = new FormData();
+                fd.append("file", $('#file')[0].files[0]);
+                $.ajax({
+                    url: '@Url.Action("BatchAdd2", "Score")',
+                    type: "POST",
+                    data: fd,
+                    datatype: 'json',
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+
+                        if (data != "导入失败") {
+                            $("#DataList").show();
+                            dataarr1 = JSON.parse(data);
+                            viewModel.people1(dataarr1);
+                        }
+                        else {
+                            alert("预览失败");
+                        }
+                    }
+
+                })
+            }),
+        };
+        ko.applyBindings(viewModel);
+
+    </script>
+
+</body>

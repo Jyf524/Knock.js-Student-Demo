@@ -1,0 +1,262 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="~/Scripts/knockout-3.5.1.debug.js"></script>
+    <script src="~/Scripts/knockout-3.5.1.js"></script>
+</head>
+<body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                     <li><a href="../../Login/Login">登录</a></li>
+                    <li><a href="../../Index/Index">学生管理</a></li>
+                    <li><a href="../../Course/Index">课程管理</a></li>
+                    <li><a href="../../Class/Index">班级管理</a></li>
+                    <li><a href="../../Sem/Index">学期管理</a></li>
+                </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+    </nav>
+    <form data-bind="submit:Search" style="margin-top:70px;">
+                <div class="page-header">
+                <h3 class="page-title col-12" style="font-size: 1.2em">
+                    <span class="page-title-icon bg-gradient-primary text-white mr-2">
+                        <i class="mdi mdi-bank"></i>
+                    </span>
+                    学期信息管理
+                </h3>
+            </div>
+        <label>学期名称:<input type="text" id="StuNameSearch" data-bind="value:StuNameSearch" /></label>
+        <label>
+            学期状态:
+         <select id="status" data-bind="value:status">
+             <option value="全部">全部</option>
+             <option value="当前学期">当前学期</option>
+             <option value="历史学期">历史学期</option>
+         </select>
+        </label>
+
+        <label>
+            <button id="Search" type="submit" class="btn btn-info" style="background-color: #62a6e9">查询</button></label>
+        <label>
+            <button id="btn_add" type="button" data-bind="click:xianshi" class="btn btn-info" style="background-color: #62a6e9">添加</button>
+        </label>
+    </form>
+    <table id="theader" class="table table-hover" style="width: 100%">
+        <thead>
+            <tr>
+                <th style="text-align: center;">序号</th>
+                <th style="text-align: center;">学期名称</th>
+                <th style="text-align: center;">学期状态</th>
+                <th style="text-align: center;">操作</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: people">
+            <tr>
+                <td style="text-align: center;" data-bind="text: SemID"></td>
+                <td style="text-align: center;" data-bind="text: SemName"></td>
+                <td style="text-align: center;" data-bind="text: Semstatus"></td>
+
+                <td style="text-align: center;">
+
+                    <button data-bind="click: $parent.remove">删除</button>
+                    <button id="btn_edit" type="button" data-bind="click:$parent.Detail">修改</button>
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
+
+        <div class="row" style="text-align: center;margin-right: 70px;">
+        <div class="col-md-12  col-xs-12">
+            <div id="fybtn">
+                <input type="text" id="page" value="1" name="page" hidden="hidden" />
+                <input type="text" id="pageNumber" value="1" name="page" hidden="hidden" />
+                <input type="text" id="pageNumx" value="1" name="page" hidden="hidden" />
+                <button type="button" style="border: 0; background: none" data-bind="click:btnf" id="btnf">首页</button>
+                <button type="button" style="border: 0; background: none" data-bind="click:btns" id="btns">上一页</button>
+                <button type="button" style="border: 0; background: none" data-bind="click:btnx" id="btnx">下一页</button>
+                <button type="button" style="border: 0; background: none" data-bind="click:btne" id="btne">尾页</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="text" name="sexx" id="sexx" hidden="hidden" />
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">操作</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="txt_Name">学期名称</label>
+                        <input type="text" class="form-control" id="txt_ID">
+                    </div>
+                    <div class="form-group">
+                        <label>学期状态</label>
+                        <select id="txt_Name">
+                            <option>当前学期</option>
+                            <option>历史学期</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btn_submit" class="btn btn-primary" data-bind="click:add">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel1">操作</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="txt_Name">学期名称</label>
+                        <input type="text" data-bind="value:details" class="form-control" id="txt_ID1">
+                    </div>
+                    <div class="form-group">
+                        <label>学期状态</label>
+                        <select id="txt_Name1" data-bind="value:details1">
+                            <option>当前学期</option>
+                            <option>历史学期</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" data-bind="click:Save">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        var dataarr = [];
+        var DetailID = 0;
+        var pageNumber;
+        var pageNumx;
+        function Search() {
+            $.post('@Url.Action("SemIndex", "Sem")', { Name: viewModel.StuNameSearch, Sex: viewModel.sex, page: $("#page").val() },
+               function (data) {
+                   dataarr = data.aa;
+                   $('#pageNumber').val(data.pageNumber);
+                   $('#pageNumx').val(data.pageNumx);
+                   viewModel.people(dataarr);
+               })
+        }
+        $('#pageNumber').val(@Html.Raw(Model.pageNumber));
+        $('#pageNumx').val(@Html.Raw(Model.pageNumx));
+        var viewModel = {
+            people: ko.observableArray(@Html.Raw(Model.aa1)),
+            StuNameSearch: ko.observable(""),
+            status: ko.observable(""),
+            Search: function () {
+                $('#page').val("1");
+                Search();
+            },
+            remove: function () {
+                $.post('@Url.Action("Semremove", "Sem")', { ID: this.SemID },
+               function (data) {
+                   alert("删除成功");
+                   viewModel.people(data);
+                   $('#page').val("1");
+                   Search();
+               });
+
+            },
+            xianshi: function () {
+                $('#myModal').modal('show');
+
+            },
+            add: function () {
+                var ID = $('#txt_ID').val()
+                var DetailName = $('#txt_Name').val()
+                $.get('@Url.Action("Semadd", "Sem")', { DetailName: ID, Detailstaus: DetailName },
+              function (data) {
+                  $('#myModal').modal('hide');
+                  console.log(data);
+                  alert(data);
+                  $('#page').val("1");
+                  Search();
+              });
+            },
+            Detail: function () {
+                $('#myModal1').modal('show');
+                DetailID = this.SemID;
+                $.get('@Url.Action("SemDetail", "Sem")', { ID: this.SemID },
+              function (data) {
+                  viewModel.details(data.SemName);
+                  viewModel.details1(data.Semstatus);
+
+              });
+            },
+            Save: function () {
+                var ID = $('#txt_ID1').val()
+                var DetailName = $('#txt_Name1').val()
+                $.get('@Url.Action("SemDetailSave", "Sem")', { ID: DetailID, DetailName: ID, Detailstaus: DetailName },
+              function (data) {
+                  $('#myModal1').modal('hide');
+                  console.log(data);
+                  alert(data);
+                  $('#page').val("1");
+                  Search();
+              });
+            },
+            btnf: function () {
+                $('#page').val("1");
+                Search();
+            },
+            btns: function () {
+                $('#page').val($("#pageNumber").val() <= 1 ? $("#pageNumber").val() : $("#pageNumber").val() * 1 - 1);
+                Search()
+            },
+            btnx: function () {
+                $('#page').val($("#pageNumber").val() >= $("#pageNumx").val() ? $("#pageNumber").val() : $("#pageNumber").val() * 1 + 1);
+                Search()
+            },
+            btne: function () {
+                $('#page').val($("#pageNumx").val());
+                Search()
+            },
+            details: ko.observable(""),
+            details1: ko.observable(""),
+
+        };
+
+        ko.applyBindings(viewModel);
+
+    </script>
+
+</body>
+</html>

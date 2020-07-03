@@ -1,0 +1,131 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>CourseAdd</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script src="~/Scripts/knockout-3.5.1.debug.js"></script>
+    <script src="~/Scripts/knockout-3.5.1.js"></script>
+
+
+    <link href="~/webuploader-0.1.5/Style.css" rel="stylesheet" />
+    <link href="~/webuploader-0.1.5/webuploader.css" rel="stylesheet" />
+
+    <script src="~/webuploader-0.1.5/webuploader.nolog.min.js"></script>
+    <script src="~/Scripts/Upload.js"></script>
+   
+</head>
+<body>
+       
+    <form onsubmit="return false" method="get" style="margin-top:70px;">
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h3 class="page-title col-12" style="font-size: 1.2em">
+                    <span class="page-title-icon bg-gradient-primary text-white mr-2">
+                        <i class="mdi mdi-bank"></i>
+                    </span>
+                    课程信息管理>新增课程
+                </h3>
+            </div>
+
+            <div class="form-horizontal" style="padding: 54px 9px 0px 198px">
+
+                <div class="form-group">
+                    <label class="col-sm-1 control-label">课程图片<label style="color: red;">*</label></label>
+                    <div class="col-sm-9">
+                         <div id="uploadArea" style="float:left">
+                            <div style="display: flex;justify-content: center;float:right">
+                                <div id="imagePicker">选择图片</div>
+                                
+                            </div>
+                            <ul id="imagesList" style="float:left">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 2%;">
+                    <label class="col-sm-1 control-label">编号<label style="color: red;">*</label></label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" data-bind="value:CourseID" placeholder="不可重复">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 2%;">
+                    <label class="col-sm-1 control-label">名称<label style="color: red;">*</label></label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" data-bind="value:CourseName" placeholder="名称">
+                    </div>
+                    <label class="col-sm-1 control-label">课时<label style="color: red;">*</label></label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" data-bind="value:Class" placeholder="课时">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 2%;">
+                    <label class="col-sm-1 control-label">教材<label style="color: red;">*</label></label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" data-bind="value:Material" placeholder="教材">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 2%;">
+                    <label class="col-sm-1 control-label">简介</label>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" rows="3" data-bind="value:Introduction"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group" style="float: right; margin-right: 18%;">
+                    <div class="col-sm-offset-2 col-sm-12">
+                        <button type="button" class="btn btn-info" data-bind="click:Add">添加</button>
+                        <button type="button" class="btn btn-default" data-bind="click:Back">取消</button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+            </div>
+        </div>
+    </form>
+
+    <script type="text/javascript">
+
+        var viewModel = {
+            CourseID: ko.observable(""),
+            CourseName: ko.observable(""),
+            Class: ko.observable(""),
+            Material: ko.observable(""),
+            FullNamepy: ko.observable(""),
+            Department: ko.observable(""),
+            Introduction: ko.observable(""),
+            Type: ko.observable(""),
+            Add: function () {
+                $.get('@Url.Action("IndexAddSave", "Course")', { CourseID: viewModel.CourseID, CourseName: viewModel.CourseName, Class: viewModel.Class, Material: viewModel.Material, Introduction: viewModel.Introduction },
+             function (data) {
+                 if (data == "添加成功") {
+                     alert(data);
+                     window.location.href = '../../Course/Index';
+                 }
+                 else {
+                     alert(data);
+                 }
+             });
+            },
+            Back: function () {
+                window.location.href = '../../Course/Index';
+            }
+        };
+        ko.applyBindings(viewModel);
+
+
+    </script>
+</body>
+</html>

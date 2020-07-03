@@ -1,0 +1,394 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script src="~/Scripts/knockout-3.5.1.debug.js"></script>
+
+</head>
+<body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                     <li><a href="../../Login/Login">登录</a></li>
+                    <li><a href="../../Index/Index">学生管理</a></li>
+                    <li><a href="../../Course/Index">课程管理</a></li>
+                    <li><a href="../../Class/Index">班级管理</a></li>
+                    <li><a href="../../Sem/Index">学期管理</a></li>
+                </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+    </nav>
+
+    <form onsubmit="return false" method="get" style="margin-top:70px;">
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h3 class="page-title col-12" style="font-size: 1.2em">
+                    <span class="page-title-icon bg-gradient-primary text-white mr-2">
+                        <i class="mdi mdi-bank"></i>
+                    </span>
+                    课程信息管理
+                </h3>
+            </div>
+            <div>
+                <div class="form-inline">
+                    <input type="text" class="form-control" data-bind="value:SearchString" placeholder="名称|编号|全称">
+                    <input type="text" class="form-control" data-bind="value:Type" placeholder="课程类型">
+                    <input type="text" class="form-control" data-bind="value:Department" placeholder="系部">
+                    <button type="submit" class="btn btn-info" style="background-color: #62a6e9" id="Search" data-bind="click:Search">查询</button>
+                      <button type="button" class="btn btn-info" onclick="Add()" style="background-color: #62a6e9">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增课程
+                    </button>
+                    <button type="button" class="btn btn-info" data-bind="click:BatchAdd" style="background-color: #62a6e9">
+                        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>导入课程
+                    </button>
+                    <a href="@Url.Action("daochu", "Course")">
+                    <button type="button" class="btn btn-info" style="background-color: #62a6e9">
+                        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>导出课程
+                    </button></a>
+                    <button class="btn btn-info" style="background-color: #62a6e9" data-bind="click: remove">删除</button>
+                </div>
+                <table id="theader" style="width: 100%; margin-top: 1%;" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="allcheck" class="checkbox" onclick="demo()" /></th>
+                            <th>序号</th>
+                            <th>名称</th>
+                            <th>编号</th>
+                            <th>全称</th>
+                            <th>全拼</th>
+                            <th>首拼</th>
+                            <th>系部</th>
+                            <th>类型</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: people">
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="choice" data-bind="value:CourseID" class="checkbox" onclick="setAll()" /></td>
+                            <td data-bind="text: $index()+1"></td>
+                            <td data-bind="text: CourseName"></td>
+                            <td data-bind="text: CourseID"></td>
+                            <td data-bind="text: FullName"></td>
+                            <td data-bind="text: FullNamepy"></td>
+                            <td data-bind="text: FullNameFrist"></td>
+                            <td data-bind="text: Department"></td>
+                            <td data-bind="text: Type"></td>
+                            <td>
+                                <button id="btn_edit" type="button" data-bind="click:$parent.Detail" class="btn btn-default">编辑</button>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+                <div class="container-fluid" style="margin-top: 20px;">
+                    <div class="row" style="text-align: center; margin-right: 70px;">
+                        <div class="col-md-12  col-xs-12">
+                            <div id="fybtn">
+                                <input type="text" id="page" value="1" name="page" hidden="hidden" />
+                                <input type="text" id="pageNumber" value="1" name="page" hidden="hidden" />
+                                <input type="text" id="pageNumx" value="1" name="page" hidden="hidden" />
+                                <button type="button" style="border: 0; background: none" data-bind="click:btnf" id="btnf">首页</button>
+                                <button type="button" style="border: 0; background: none" data-bind="click:btns" id="btns">上一页</button>
+                                <button type="button" style="border: 0; background: none" data-bind="click:btnx" id="btnx">下一页</button>
+                                <button type="button" style="border: 0; background: none" data-bind="click:btne" id="btne">尾页</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="modal fade" id="myBatchAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel1">导入课程数据</h4>
+                </div>
+                <div class="modal-body">
+                    模板下载:<a href="~/Files/模板2.xlsx">下载</a>
+                </div>
+                <div class="modal-body">
+                    <input name="file" type="file" data-bind="change:filechange" id="file" style="float: left" />
+                </div>
+                <div class="modal-body">
+                    <table id="DataList" class="table table-hover datatable">
+                        <thead>
+                            <tr>
+                                <th>编号</th>
+                                <th>名称</th>
+                                <th>全称</th>
+                                <th>系部</th>
+                                <th>类型</th>
+                            </tr>
+
+                        </thead>
+                        <tbody data-bind="foreach: people1">
+                            <tr>
+                                <td data-bind="text: CourseID1"></td>
+                                <td data-bind="text: CourseName1"></td>
+                                <td data-bind="text: FullName1"></td>
+                                <td data-bind="text: Department1"></td>
+                                <td data-bind="text: Type1"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" data-bind="click:SaveBatchAdd">批量导入</button>
+                </div>
+
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal -->
+    </div>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">操作</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="txt_Name">名称</label>
+                        <input type="text" data-bind="value:details" class="form-control" id="txt_Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="Type2">类别</label>
+                        <select class="form-control" data-bind="value:Type2">
+
+                            <option value="">请选择</option>
+                            <option value="学科课程">学科课程</option>
+                            <option value="经验课程">经验课程</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="Department2">部门</label>
+                        <select class="form-control" data-bind="value:Department2">
+                            <option value="">请选择</option>
+                            <option value="中文系">中文系</option>
+                            <option value="体育部">体育部</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btn_submit" class="btn btn-primary" data-bind="click:Save">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var dataarr = [];
+        var DetailID = 0;
+        $("#DataList").hide();
+        var pageNumber;
+        var pageNumx;
+        function Search() {
+            $.get('@Url.Action("Index1", "Course")', { SearchString: viewModel.SearchString, Type: viewModel.Type, Department: viewModel.Department, page: $("#page").val() },
+               function (data) {
+                   dataarr = data.aa;
+                   $('#pageNumber').val(data.pageNumber);
+                   $('#pageNumx').val(data.pageNumx);
+                   viewModel.people(dataarr);
+
+               })
+        }
+        $('#pageNumber').val(@Html.Raw(Model.pageNumber));
+        $('#pageNumx').val(@Html.Raw(Model.pageNumx));
+
+
+        var viewModel = {
+            people: ko.observableArray(@Html.Raw(Model.aa1)),
+            people1: ko.observableArray(""),
+            SearchString: ko.observable(""),
+            Type: ko.observable(""),
+            Department: ko.observable(""),
+            details: ko.observable(""),
+            Type2: ko.observable(""),
+            Department2: ko.observable(""),
+            daochu: ko.observable(""),
+            Search: function () {
+                $('#page').val("1");
+                Search();
+            },
+            remove: function () {
+                var arr1 = [];
+                var a = document.getElementsByName('choice');
+                for (var i = 0; i < a.length; i++) {
+                    if (a[i].checked == true) {
+                        arr1.push(a[i].value);
+                    }
+                }
+                if (arr1.length != 0) {
+                    $.get('@Url.Action("DeleteList", "Course")',
+                    "arr=" + arr1,
+                    function (data) {
+                        alert(data);
+                        document.getElementById("allcheck").checked = false;
+                        $('#page').val("1");
+                        Search();
+                    }
+                )
+                }
+            },
+            btnf: function () {
+                $('#page').val("1");
+                Search();
+
+            },
+            btns: function () {
+                $('#page').val($("#pageNumber").val() <= 1 ? $("#pageNumber").val() : $("#pageNumber").val() * 1 - 1);
+                Search()
+            },
+            btnx: function () {
+                $('#page').val($("#pageNumber").val() >= $("#pageNumx").val() ? $("#pageNumber").val() : $("#pageNumber").val() * 1 + 1);
+                Search()
+            },
+            btne: function () {
+                $('#page').val($("#pageNumx").val());
+                Search()
+            },
+            BatchAdd: function () {
+                $('#myBatchAdd').modal('show');
+            },
+            SaveBatchAdd: function () {
+                var fd = new FormData();
+                fd.append("file", $('#file')[0].files[0]);
+                $.ajax({
+                    url: '@Url.Action("BatchAdd", "Course")',
+                    type: "POST",
+                    data: fd,
+                    datatype: 'json',
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data == "导入成功") {
+                            alert(data);
+                            $('#myBatchAdd').modal('hide');
+                            $('#page').val("1");
+                            Search();
+                        }
+                        else {
+                            alert(data);
+                        }
+                    }
+
+                })
+            },
+
+            filechange: document.getElementById("file").addEventListener("change", function () {
+                var fd = new FormData();
+                fd.append("file", $('#file')[0].files[0]);
+                $.ajax({
+                    url: '@Url.Action("BatchAdd2", "Course")',
+                    type: "POST",
+                    data: fd,
+                    datatype: 'json',
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data != "导入失败") {
+                            $("#DataList").show();
+                            dataarr1 = JSON.parse(data);
+                            viewModel.people1(dataarr1);
+                        }
+                        else {
+                            alert("预览失败");
+                        }
+                    }
+
+                })
+            }),
+            Detail: function () {
+                $('#myModal').modal('show');
+                DetailID = this.CourseID;
+                $.get('@Url.Action("IndexDetail", "Course")', { ID: DetailID },
+              function (data) {
+                  viewModel.details(data[0].CourseName);
+                  viewModel.Type2(data[0].Type);
+                  viewModel.Department2(data[0].Department);
+              });
+            },
+            Save: function () {
+                var DetailName = $('#txt_Name').val()
+                $.get('@Url.Action("IndexDetailSave", "Course")', { id: DetailID, DetailName: DetailName, Type2: viewModel.Type2, Department2: viewModel.Department2 },
+              function (data) {
+                  if (data == "修改成功") {
+                      $('#myModal').modal('hide');
+                      alert("修改成功");
+                      $('#page').val("1");
+                      Search();
+                  }
+                  else {
+                      alert(data);
+                  }
+              });
+            },
+            daochu: function () {
+                $.get('@Url.Action("daochu", "Course")', {  },
+              function (data) {
+                  location = "/Course/Index";
+              });
+            },
+        };
+        ko.applyBindings(viewModel);
+
+        function demo() {
+            var allcheck = document.getElementById("allcheck");
+            var choice = document.getElementsByName("choice");
+            for (var i = 0; i < choice.length; i++) {
+                choice[i].checked = allcheck.checked;
+            }
+        }
+
+
+        //点击子复选框,全选框 选中、取消
+        function setAll() {
+            if (!$(".checkbox").checked) {
+                $("#allcheck").prop("checked", false); // 子复选框某个不选择，全选也被取消
+            }
+            var choicelength = $("input[type='checkbox'][class='checkbox']").length;
+            var choiceselect = $("input[type='checkbox'][class='checkbox']:checked").length;
+
+            if (choicelength == choiceselect + 1) {
+                $("#allcheck").prop("checked", true);   // 子复选框全部部被选择，全选也被选择；1.对于HTML元素我们自己自定义的DOM属性，在处理时，使用attr方法；2.对于HTML元素本身就带有的固有属性，在处理时，使用prop方法。
+            }
+        }
+
+        function Add() {
+            window.location.href = '../../Course/CourseAdd';
+        }
+
+
+    </script>
+</body>
+</html>
